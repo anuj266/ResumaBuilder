@@ -7,16 +7,34 @@ import {
   Box,
   IconButton,
   Menu,
-  MenuItem
+  MenuItem,
+  Avatar
 } from '@mui/material';
 import { useNavigate } from 'react-router-dom';
-import AccountCircle from '@mui/icons-material/AccountCircle';
+import { jwtDecode } from "jwt-decode";
 
 function Navbar() {
   const navigate = useNavigate();
   const [anchorEl, setAnchorEl] = React.useState(null);
-  const isLoggedIn = false; // This would come from your auth context
+  const token = localStorage.getItem('token');
+  const isLoggedIn = !!token;
+  
+  // Decode the JWT token to get user information
+  const getUserInfo = () => {
+    if (token) {
+      try {
+        const decoded = jwtDecode(token);
+        return decoded;
+      } catch (error) {
+        console.error('Error decoding token:', error);
+        return {};
+      }
+    }
+    return {};
+  };
 
+  const userInfo = getUserInfo();
+  console.log(userInfo);
   const handleMenu = (event) => {
     setAnchorEl(event.currentTarget);
   };
@@ -26,9 +44,11 @@ function Navbar() {
   };
 
   const handleLogout = () => {
-    // Handle logout logic here
+    localStorage.removeItem('token');
+    localStorage.removeItem('user');
     handleClose();
     navigate('/login');
+    window.location.reload();
   };
 
   return (
@@ -37,20 +57,27 @@ function Navbar() {
         <Typography
           variant="h6"
           component="div"
-          sx={{ flexGrow: 1, cursor: 'pointer' }}
+          sx={{ cursor: 'pointer', marginRight: 3 }}
           onClick={() => navigate('/')}
         >
           Resume Builder
         </Typography>
 
-        {isLoggedIn ? (
-          <Box>
-            <Button color="inherit" onClick={() => navigate('/dashboard')}>
+        {isLoggedIn && (
+          <>
+            <Button color="inherit" onClick={() => navigate('/dashboard')} sx={{ mr: 2 }}>
               Dashboard
             </Button>
-            <Button color="inherit" onClick={() => navigate('/create-resume')}>
+            <Button color="inherit" onClick={() => navigate('/create-resume')} sx={{ mr: 2 }}>
               Create Resume
             </Button>
+          </>
+        )}
+
+        <Box sx={{ flexGrow: 1 }} />
+
+        {isLoggedIn ? (
+          <Box>
             <IconButton
               size="large"
               aria-label="account of current user"
@@ -59,7 +86,15 @@ function Navbar() {
               onClick={handleMenu}
               color="inherit"
             >
-              <AccountCircle />
+              <Avatar sx={{ 
+                bgcolor: '#ff4081', 
+                width: 40, 
+                height: 40,
+                fontWeight: 'bold',
+                fontSize: '1.2rem'
+              }}>
+                {userInfo.sub.name ? userInfo.sub.name.charAt(0).toUpperCase() : 'U'}
+              </Avatar>
             </IconButton>
             <Menu
               id="menu-appbar"
