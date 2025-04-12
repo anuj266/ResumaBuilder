@@ -27,15 +27,26 @@ function Login() {
     }));
   };
 
-  const handleSubmit = (e) => {
+  const handleSubmit = async (e) => {
     e.preventDefault();
-    // Here you would typically make an API call to your backend
-    // For now, we'll just simulate a successful login
-    if (formData.email && formData.password) {
-      // Navigate to dashboard on successful login
-      navigate('/dashboard');
-    } else {
-      setError('Please fill in all fields');
+    try {
+      const response = await fetch('http://localhost:5000/login', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify(formData),
+      });
+
+      const data = await response.json();
+      if (response.ok) {
+        localStorage.setItem('token', data.access_token);
+        navigate('/dashboard');
+      } else {
+        setError(data.message || 'Login failed');
+      }
+    } catch (error) {
+      setError('An error occurred. Please try again.');
     }
   };
 

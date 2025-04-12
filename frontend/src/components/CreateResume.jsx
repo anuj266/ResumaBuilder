@@ -15,6 +15,7 @@ import {
   Select,
   MenuItem
 } from '@mui/material';
+import ResumePreview from './ResumePreview';
 
 const steps = ['Personal Information', 'Education', 'Experience', 'Skills', 'Template Selection'];
 
@@ -150,39 +151,46 @@ function CreateResume() {
   };
 
   return (
-    <Container maxWidth="md">
-      <Paper sx={{ p: 3, mt: 4 }}>
-        <Typography variant="h4" component="h1" gutterBottom>
-          Create New Resume
-        </Typography>
-        
-        <Stepper activeStep={activeStep} sx={{ mb: 4 }}>
-          {steps.map((label) => (
-            <Step key={label}>
-              <StepLabel>{label}</StepLabel>
-            </Step>
-          ))}
-        </Stepper>
+    <div style={{ display: 'flex' }}>
+      <div style={{ flex: 1 }}>
+        <Container maxWidth="md">
+          <Paper sx={{ p: 3, mt: 4 }}>
+            <Typography variant="h4" component="h1" gutterBottom>
+              Create New Resume
+            </Typography>
+            
+            <Stepper activeStep={activeStep} sx={{ mb: 4 }}>
+              {steps.map((label) => (
+                <Step key={label}>
+                  <StepLabel>{label}</StepLabel>
+                </Step>
+              ))}
+            </Stepper>
 
-        {renderStepContent(activeStep)}
+            {renderStepContent(activeStep)}
 
-        <Box sx={{ display: 'flex', justifyContent: 'flex-end', mt: 3 }}>
-          <Button
-            disabled={activeStep === 0}
-            onClick={handleBack}
-            sx={{ mr: 1 }}
-          >
-            Back
-          </Button>
-          <Button
-            variant="contained"
-            onClick={handleNext}
-          >
-            {activeStep === steps.length - 1 ? 'Finish' : 'Next'}
-          </Button>
-        </Box>
-      </Paper>
-    </Container>
+            <Box sx={{ display: 'flex', justifyContent: 'flex-end', mt: 3 }}>
+              <Button
+                disabled={activeStep === 0}
+                onClick={handleBack}
+                sx={{ mr: 1 }}
+              >
+                Back
+              </Button>
+              <Button
+                variant="contained"
+                onClick={handleNext}
+              >
+                {activeStep === steps.length - 1 ? 'Finish' : 'Next'}
+              </Button>
+            </Box>
+          </Paper>
+        </Container>
+      </div>
+      <div style={{ flex: 1 }}>
+        <ResumePreview data={formData} />
+      </div>
+    </div>
   );
 }
 
