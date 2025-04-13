@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useState, useEffect } from 'react';
 import {
   AppBar,
   Toolbar,
@@ -15,26 +15,26 @@ import { jwtDecode } from "jwt-decode";
 
 function Navbar() {
   const navigate = useNavigate();
-  const [anchorEl, setAnchorEl] = React.useState(null);
+  const [anchorEl, setAnchorEl] = useState(null);
+  const [decoded, setDecoded] = useState(null);
+
   const token = localStorage.getItem('token');
   const isLoggedIn = !!token;
-  
-  // Decode the JWT token to get user information
-  const getUserInfo = () => {
+
+  // Decode the JWT token safely
+  useEffect(() => {
     if (token) {
       try {
-        const decoded = jwtDecode(token);
-        return decoded;
+        const decodedToken = jwtDecode(token);
+        setDecoded(decodedToken);
+        console.log(decoded);
+        console.log(decodedToken+123);
       } catch (error) {
-        console.error('Error decoding token:', error);
-        return {};
+        console.error('Failed to decode token:', error);
       }
     }
-    return {};
-  };
+  }, [token]);
 
-  const userInfo = getUserInfo();
-  console.log(userInfo);
   const handleMenu = (event) => {
     setAnchorEl(event.currentTarget);
   };
@@ -86,14 +86,14 @@ function Navbar() {
               onClick={handleMenu}
               color="inherit"
             >
-              <Avatar sx={{ 
-                bgcolor: '#ff4081', 
-                width: 40, 
+              <Avatar sx={{
+                bgcolor: '#ff4081',
+                width: 40,
                 height: 40,
                 fontWeight: 'bold',
                 fontSize: '1.2rem'
               }}>
-                {userInfo.sub.name ? userInfo.sub.name.charAt(0).toUpperCase() : 'U'}
+                {decoded?.sub?.name ? decoded.sub.name.charAt(0).toUpperCase() : 'U'}
               </Avatar>
             </IconButton>
             <Menu
@@ -132,4 +132,4 @@ function Navbar() {
   );
 }
 
-export default Navbar; 
+export default Navbar;
